@@ -1,0 +1,394 @@
+<title>Instagram recoloca.me</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: coluna de leitura única; o grid 3x3 do perfil é a peça central, simulando o feed real */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --ink:#111A2E; --muted:#5A6478; --line:#DCE1EA;
+  --accent:#2F55E6; --accent-ink:#FFFFFF; --sun:#FFC83D; --sun-ink:#1B1606; --soft:#E4EAFD;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1322; --surface:#151D31; --ink:#EEF1F7; --muted:#9AA4B8; --line:#26304A;
+  --accent:#6E8BFF; --accent-ink:#0D1322; --sun:#FFC83D; --sun-ink:#1B1606; --soft:#1D2A52; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1322; --surface:#151D31; --ink:#EEF1F7; --muted:#9AA4B8; --line:#26304A;
+  --accent:#6E8BFF; --accent-ink:#0D1322; --sun:#FFC83D; --sun-ink:#1B1606; --soft:#1D2A52; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 72px;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(2rem,6vw,3.2rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.6rem;font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.1rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+section{display:flex;flex-direction:column;gap:18px}
+.lead{font-size:1.1rem;color:var(--muted)}
+.note{background:var(--soft);border-radius:10px;padding:14px 16px;font-size:.95rem}
+.note b{color:var(--ink)}
+code{font-size:.9em;background:var(--soft);padding:1px 6px;border-radius:4px;word-break:break-all}
+
+/* Perfil */
+.profile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:18px}
+.phead{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.avatar{width:84px;height:84px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.5rem;letter-spacing:-.03em;flex:none}
+.avatar span{color:var(--sun)}
+.pmeta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.handle{font-weight:600;font-size:1.05rem}
+.pname{font-weight:600}
+.pcat{color:var(--muted);font-size:.9rem}
+.pbio{white-space:pre-line;font-size:.95rem}
+.plink{color:var(--accent);font-weight:600;font-size:.95rem}
+.hls{display:flex;gap:14px;overflow-x:auto;padding-bottom:4px}
+.hl{display:flex;flex-direction:column;align-items:center;gap:6px;flex:none;width:68px;font-size:.75rem;text-align:center}
+.hl i{width:58px;height:58px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-family:var(--display);font-weight:800;background:var(--soft);color:var(--accent)}
+
+/* Grid do feed */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;border-radius:12px;overflow:hidden}
+.tile{aspect-ratio:4/5;max-width:100%;padding:10%;display:flex;flex-direction:column;justify-content:space-between;font-family:var(--display);position:relative;min-width:0}
+.tile .t{font-weight:800;font-size:clamp(.72rem,2.6vw,1.25rem);line-height:1.05;letter-spacing:-.01em}
+.tile .k{font-family:var(--body);font-size:clamp(.55rem,1.6vw,.72rem);font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.tile .n{position:absolute;top:8%;right:9%;font-family:var(--body);font-size:clamp(.55rem,1.6vw,.72rem);font-weight:600;opacity:.75}
+.c-blue{background:#2F55E6;color:#fff}
+.c-sun{background:#FFC83D;color:#1B1606}
+.c-ink{background:#111A2E;color:#fff}
+.c-ink .t em{color:#FFC83D;font-style:normal}
+.c-blue .t em{color:#FFC83D;font-style:normal}
+.c-sun .t em{color:#2F55E6;font-style:normal}
+
+/* Posts */
+.posts{display:flex;flex-direction:column;gap:14px}
+.post{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;grid-template-columns:auto 1fr;gap:6px 16px}
+.post .num{font-family:var(--display);font-weight:800;font-size:1.4rem;color:var(--accent);grid-row:span 3}
+.post .fmt{font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.post .body{min-width:0;display:flex;flex-direction:column;gap:10px}
+.post ol{margin:0;padding-left:1.2em;color:var(--muted);font-size:.95rem}
+.cap{background:var(--bg);border-radius:8px;padding:12px 14px;font-size:.92rem;white-space:pre-line;position:relative}
+.copy{align-self:flex-start;font:600 .82rem var(--body);background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:5px 12px;cursor:pointer}
+.copy:hover{background:var(--accent);color:var(--accent-ink)}
+.copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Tabelas e listas */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.92rem}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.pillar{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.pillar .pct{font-family:var(--display);font-weight:800;font-size:1.6rem;color:var(--accent);font-variant-numeric:tabular-nums}
+.pillar p{color:var(--muted);font-size:.92rem}
+.bios{display:flex;flex-direction:column;gap:12px}
+.bio{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.bio .cap{background:var(--bg)}
+.bio .meta{font-size:.8rem;color:var(--muted)}
+.steps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:10px}
+.steps li{padding-left:4px}
+.steps li b{font-weight:600}
+ul.plain{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.88rem}
+@media (max-width:520px){.post{grid-template-columns:1fr}.post .num{grid-row:auto}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:14px">
+  <span class="eyebrow">Kit de lançamento · Instagram</span>
+  <h1>Instagram do recoloca.me</h1>
+  <p class="lead">Tudo para abrir o perfil: nome, bio, destaques, os 9 primeiros posts com legenda pronta e o calendário do primeiro mês.</p>
+  <p class="note"><b>Antes de publicar:</b> este kit parte do princípio de que o recoloca.me ajuda profissionais a se recolocar no mercado (currículo, LinkedIn, candidaturas e entrevistas). Os trechos entre <code>[colchetes]</code> são para você trocar pelos dados reais do produto.</p>
+</header>
+
+<section>
+  <span class="eyebrow">1 · Como o perfil vai ficar</span>
+  <h2>Prévia do perfil</h2>
+  <div class="profile">
+    <div class="phead">
+      <div class="avatar">re<span>.</span>me</div>
+      <div class="pmeta">
+        <span class="handle">@recoloca.me</span>
+        <span class="pname">recoloca.me | Recolocação profissional</span>
+        <span class="pcat">Serviço de emprego</span>
+      </div>
+    </div>
+    <p class="pbio">Sua próxima vaga começa aqui 🚀
+Currículo, LinkedIn e entrevistas sem achismo.
+Dicas práticas toda semana.
+👇 Comece grátis</p>
+    <span class="plink">recoloca.me</span>
+    <div class="hls">
+      <div class="hl"><i>1</i>Comece aqui</div>
+      <div class="hl"><i>CV</i>Currículo</div>
+      <div class="hl"><i>in</i>LinkedIn</div>
+      <div class="hl"><i>?</i>Entrevista</div>
+      <div class="hl"><i>★</i>Histórias</div>
+      <div class="hl"><i>re</i>O app</div>
+    </div>
+    <div class="grid" aria-label="Prévia dos 9 primeiros posts no feed">
+      <!-- O Instagram mostra o post mais recente no topo: o post 9 aparece primeiro -->
+      <div class="tile c-sun"><span class="n">09</span><span class="k">História</span><span class="t">“Fui recolocado em <em>[X] semanas</em>”</span></div>
+      <div class="tile c-ink"><span class="n">08</span><span class="k">Checklist</span><span class="t">Fui demitido. <em>E agora?</em></span></div>
+      <div class="tile c-blue"><span class="n">07</span><span class="k">Bastidores</span><span class="t">Por que eu criei o <em>recoloca.me</em></span></div>
+      <div class="tile c-ink"><span class="n">06</span><span class="k">Antes / depois</span><span class="t">Seu título no LinkedIn <em>vende</em> você?</span></div>
+      <div class="tile c-sun"><span class="n">05</span><span class="k">Reels</span><span class="t">“Fale sobre você” em <em>60 segundos</em></span></div>
+      <div class="tile c-blue"><span class="n">04</span><span class="k">Carrossel</span><span class="t">5 erros que <em>descartam</em> seu currículo</span></div>
+      <div class="tile c-ink"><span class="n">03</span><span class="k">Como funciona</span><span class="t">Recolocação em <em>3 passos</em></span></div>
+      <div class="tile c-sun"><span class="n">02</span><span class="k">Quem somos</span><span class="t">Procurar emprego <em>é um trabalho.</em> A gente organiza.</span></div>
+      <div class="tile c-blue"><span class="n">01</span><span class="k">Manifesto</span><span class="t">Você perdeu o emprego. <em>Não o seu valor.</em></span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">2 · Criação da conta</span>
+  <h2>Passo a passo</h2>
+  <ol class="steps">
+    <li><b>Reserve o @.</b> Primeira opção: <code>@recoloca.me</code> (igual ao domínio). Se estiver ocupado: <code>@recoloca.app</code>, <code>@recolocame</code> ou <code>@usarecoloca</code>. Reserve o mesmo @ no TikTok e no LinkedIn.</li>
+    <li><b>Crie com um e-mail da empresa</b> (ex.: <code>contato@recoloca.me</code>), não com o pessoal. Ative a autenticação em dois fatores logo de cara.</li>
+    <li><b>Mude para conta profissional:</b> Configurações → Tipo de conta e ferramentas → Mudar para conta profissional → <i>Empresa</i>. Categoria: <i>Serviço de emprego</i> (ou <i>Site de empregos</i>).</li>
+    <li><b>Nome do perfil:</b> <code>recoloca.me | Recolocação profissional</code>. O campo “nome” entra na busca, então a palavra “recolocação” ajuda as pessoas a acharem o perfil.</li>
+    <li><b>Link na bio com rastreio</b>, para saber quantos cadastros vêm do Instagram:<br><code>https://recoloca.me/?utm_source=instagram&amp;utm_medium=social&amp;utm_campaign=bio</code></li>
+    <li><b>Conecte a uma Página do Facebook</b> e use o Meta Business Suite para agendar posts e ver as métricas.</li>
+    <li><b>Foto de perfil:</b> só o símbolo da marca, sem texto pequeno (vira um círculo de 110 px no celular).</li>
+    <li><b>Publique os 9 posts antes de divulgar</b> o perfil, para quem chegar já encontrar um feed completo. Depois, crie os 6 destaques.</li>
+  </ol>
+</section>
+
+<section>
+  <span class="eyebrow">3 · Bio</span>
+  <h2>Três opções de bio</h2>
+  <p>Limite do Instagram: 150 caracteres. As três cabem.</p>
+  <div class="bios">
+    <div class="bio"><span class="meta">Direta · recomendada</span><div class="cap" id="bio1">Sua próxima vaga começa aqui 🚀
+Currículo, LinkedIn e entrevistas sem achismo.
+Dicas práticas toda semana.
+👇 Comece grátis</div><button class="copy" type="button" data-copy="bio1">Copiar bio</button></div>
+    <div class="bio"><span class="meta">Acolhedora</span><div class="cap" id="bio2">Perdeu o emprego? Você não está sozinho.
+Método e ferramenta para se recolocar mais rápido.
+👇 Use o recoloca.me</div><button class="copy" type="button" data-copy="bio2">Copiar bio</button></div>
+    <div class="bio"><span class="meta">Resultado</span><div class="cap" id="bio3">Menos currículo ignorado, mais entrevista marcada.
+Recolocação profissional com método.
+👇 Teste agora</div><button class="copy" type="button" data-copy="bio3">Copiar bio</button></div>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">4 · Linha editorial</span>
+  <h2>Pilares de conteúdo</h2>
+  <p>A proporção evita o erro mais comum de perfil de produto: falar só do produto. Quem segue quer conseguir a vaga; o recoloca.me aparece como o atalho.</p>
+  <div class="pillars">
+    <div class="pillar"><span class="pct">40%</span><h3>Dicas práticas</h3><p>Currículo, LinkedIn, candidatura e entrevista. Conteúdo para salvar.</p></div>
+    <div class="pillar"><span class="pct">25%</span><h3>Apoio e mentalidade</h3><p>Demissão, ansiedade, rotina de busca, rejeição. Conteúdo para compartilhar.</p></div>
+    <div class="pillar"><span class="pct">20%</span><h3>Produto</h3><p>Como a ferramenta resolve cada etapa, tutoriais curtos, novidades.</p></div>
+    <div class="pillar"><span class="pct">15%</span><h3>Histórias e bastidores</h3><p>Usuários recolocados (com autorização) e a jornada de quem constrói o recoloca.me.</p></div>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">5 · Os 9 primeiros posts</span>
+  <h2>Roteiro e legendas</h2>
+  <p>Publique na ordem de 01 a 09. Formato do feed: 1080 × 1350 px (4:5). Reels: 1080 × 1920 px.</p>
+  <div class="posts">
+
+    <article class="post"><span class="num">01</span><div class="body">
+      <span class="fmt">Manifesto · post único ou carrossel de 3</span>
+      <h3>Você perdeu o emprego. Não o seu valor.</h3>
+      <div class="cap" id="c1">Ser demitido não apaga o que você construiu.
+Mas procurar emprego sem método cansa, e muito.
+
+O recoloca.me nasceu para transformar a busca por uma vaga em um processo claro: o que fazer hoje, o que ajustar no currículo, onde aplicar e como se preparar.
+
+Se você está em transição, este perfil é para você. Siga e ative as notificações: dica prática toda semana.
+
+#recolocação #recolocaçãoprofissional #transiçãodecarreira #vagas</div>
+      <button class="copy" type="button" data-copy="c1">Copiar legenda</button>
+    </div></article>
+
+    <article class="post"><span class="num">02</span><div class="body">
+      <span class="fmt">Quem somos · carrossel de 5</span>
+      <h3>Procurar emprego é um trabalho. A gente organiza.</h3>
+      <ol><li>Capa com a frase</li><li>A dor: vagas espalhadas, currículo genérico, zero retorno</li><li>O que o recoloca.me faz: [3 funções principais]</li><li>Para quem é: [público]</li><li>CTA: link na bio</li></ol>
+      <div class="cap" id="c2">Planilha de vagas, 15 abas abertas, currículo “final_v7” e nenhuma resposta. Conhece?
+
+O recoloca.me junta tudo em um lugar só: [função 1], [função 2] e [função 3].
+
+Arrasta para o lado e veja como funciona 👉
+Link na bio para começar.
+
+#recolocação #buscadeemprego #carreira #empregabilidade</div>
+      <button class="copy" type="button" data-copy="c2">Copiar legenda</button>
+    </div></article>
+
+    <article class="post"><span class="num">03</span><div class="body">
+      <span class="fmt">Como funciona · carrossel de 5 ou Reels com tela gravada</span>
+      <h3>Recolocação em 3 passos</h3>
+      <ol><li>Capa</li><li>Passo 1: [ex.: cadastre seu perfil e objetivo]</li><li>Passo 2: [ex.: ajuste currículo e LinkedIn]</li><li>Passo 3: [ex.: acompanhe candidaturas e prepare entrevistas]</li><li>CTA</li></ol>
+      <div class="cap" id="c3">Como o recoloca.me funciona, sem enrolação:
+
+1️⃣ [Passo 1]
+2️⃣ [Passo 2]
+3️⃣ [Passo 3]
+
+Salve este post para consultar depois e comece pelo link na bio.
+
+#recolocaçãoprofissional #currículo #linkedin #entrevistadeemprego</div>
+      <button class="copy" type="button" data-copy="c3">Copiar legenda</button>
+    </div></article>
+
+    <article class="post"><span class="num">04</span><div class="body">
+      <span class="fmt">Dica · carrossel de 7</span>
+      <h3>5 erros que descartam seu currículo</h3>
+      <ol><li>Capa</li><li>Currículo igual para todas as vagas</li><li>Lista de tarefas em vez de resultados</li><li>Mais de 2 páginas sem necessidade</li><li>Faltam as palavras-chave da vaga (os sistemas de triagem filtram por elas)</li><li>Erro de português ou e-mail pouco profissional</li><li>CTA: “O recoloca.me te ajuda a [ajustar o currículo para cada vaga]”</li></ol>
+      <div class="cap" id="c4">Seu currículo pode estar sendo descartado antes de chegar a uma pessoa.
+
+Os 5 erros mais comuns estão no carrossel 👉
+
+Qual deles você já cometeu? Conta aqui nos comentários.
+💾 Salve para revisar o seu hoje.
+
+#currículo #dicasdecarreira #recolocação #vagasdeemprego #rh</div>
+      <button class="copy" type="button" data-copy="c4">Copiar legenda</button>
+    </div></article>
+
+    <article class="post"><span class="num">05</span><div class="body">
+      <span class="fmt">Reels · 30 a 45 s, falando para a câmera</span>
+      <h3>“Fale sobre você” em 60 segundos</h3>
+      <ol><li>Gancho (0–3 s): “A pergunta que mais trava candidato em entrevista.”</li><li>Estrutura: presente (o que você faz hoje) → passado (o que te trouxe até aqui) → futuro (por que esta vaga)</li><li>Exemplo rápido</li><li>CTA: “Comenta ENTREVISTA que eu te mando o roteiro.”</li></ol>
+      <div class="cap" id="c5">“Fale um pouco sobre você.” Simples assim, e muita gente trava.
+
+Use a estrutura presente → passado → futuro e responda em até 1 minuto.
+
+Comenta ENTREVISTA que a gente te manda o roteiro completo 📩
+
+#entrevistadeemprego #dicasdeentrevista #recolocação #carreira</div>
+      <button class="copy" type="button" data-copy="c5">Copiar legenda</button>
+    </div></article>
+
+    <article class="post"><span class="num">06</span><div class="body">
+      <span class="fmt">Antes / depois · carrossel de 4</span>
+      <h3>Seu título no LinkedIn vende você?</h3>
+      <ol><li>Capa</li><li>Antes: “Buscando novas oportunidades”</li><li>Depois: “Analista Financeiro | FP&amp;A | Redução de custos | Power BI”</li><li>Fórmula: cargo + especialidade + resultado ou ferramenta</li></ol>
+      <div class="cap" id="c6">“Em busca de novas oportunidades” é o título mais comum, e o que menos aparece nas buscas dos recrutadores.
+
+Troque por: cargo + especialidade + resultado ou ferramenta.
+
+Escreve o seu cargo nos comentários que a gente sugere um título 👇
+
+#linkedin #perfillinkedin #recolocação #marcapessoal</div>
+      <button class="copy" type="button" data-copy="c6">Copiar legenda</button>
+    </div></article>
+
+    <article class="post"><span class="num">07</span><div class="body">
+      <span class="fmt">Bastidores · Reels ou foto com texto longo</span>
+      <h3>Por que eu criei o recoloca.me</h3>
+      <ol><li>Sílvio, fundador, em vídeo ou foto</li><li>A história real que motivou a criação</li><li>O que o recoloca.me quer mudar</li></ol>
+      <div class="cap" id="c7">Oi, eu sou o Sílvio, criador do recoloca.me.
+
+[Conte em 3 ou 4 frases o momento que te fez criar a ferramenta: uma experiência sua, de alguém próximo ou o que você viu no mercado.]
+
+Criei o recoloca.me para que ninguém precise passar pela recolocação sem um plano.
+
+Se você está nessa fase, me conta nos comentários: qual parte está sendo mais difícil?
+
+#empreendedorismo #recolocação #bastidores #startup</div>
+      <button class="copy" type="button" data-copy="c7">Copiar legenda</button>
+    </div></article>
+
+    <article class="post"><span class="num">08</span><div class="body">
+      <span class="fmt">Checklist · carrossel de 8, feito para salvar</span>
+      <h3>Fui demitido. E agora?</h3>
+      <ol><li>Capa</li><li>Confira rescisão, FGTS e seguro-desemprego</li><li>Organize as finanças dos próximos meses</li><li>Respire: tire 2 ou 3 dias antes de sair aplicando</li><li>Defina o objetivo: mesmo cargo, mudança de área ou de setor?</li><li>Atualize currículo e LinkedIn</li><li>Avise sua rede de contatos</li><li>Monte uma rotina de busca (com o recoloca.me)</li></ol>
+      <div class="cap" id="c8">O checklist que a gente queria ter recebido no dia da demissão 📋
+
+São 7 passos para a primeira semana. Salve e envie para quem está passando por isso.
+
+#demissão #segurodesemprego #recolocação #transiçãodecarreira</div>
+      <button class="copy" type="button" data-copy="c8">Copiar legenda</button>
+    </div></article>
+
+    <article class="post"><span class="num">09</span><div class="body">
+      <span class="fmt">História de usuário · carrossel ou Reels</span>
+      <h3>“Fui recolocado em [X] semanas”</h3>
+      <ol><li>Foto e nome do usuário (só com autorização por escrito)</li><li>Situação antes</li><li>O que mudou usando o recoloca.me</li><li>Resultado</li></ol>
+      <p class="note">Se ainda não houver um caso real, troque este post por uma enquete nos Stories (“Há quanto tempo você está procurando vaga?”) e publique a história quando tiver. Não use depoimento inventado.</p>
+      <div class="cap" id="c9">[Nome], [cargo], estava há [tempo] procurando vaga.
+
+“[Frase do usuário sobre a experiência.]”
+
+Com o recoloca.me, [o que mudou], e em [X] semanas veio a proposta. 🎉
+
+Quer ser a próxima história? Link na bio.
+
+#recolocação #históriasreais #novoemprego #carreira</div>
+      <button class="copy" type="button" data-copy="c9">Copiar legenda</button>
+    </div></article>
+
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">6 · Primeiro mês</span>
+  <h2>Calendário de 4 semanas</h2>
+  <p>Ritmo sustentável: 3 posts no feed por semana e Stories em pelo menos 5 dias. Horários com bom alcance para esse público: 7h–9h e 19h–21h (ajuste pelos dados depois de 30 dias).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Semana</th><th>Segunda</th><th>Quarta</th><th>Sexta</th><th>Stories</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Lançamento</td><td>01 Manifesto<br>02 Quem somos<br>03 Como funciona</td><td>04 Erros no currículo</td><td>05 Reels “Fale sobre você”</td><td>Bastidores do lançamento, enquete “Você está procurando vaga?”</td></tr>
+      <tr><td>2 · Confiança</td><td>06 Título do LinkedIn</td><td>07 Por que criei</td><td>08 Checklist demissão</td><td>Caixa de perguntas: “Qual sua maior dúvida na busca?”</td></tr>
+      <tr><td>3 · Prova</td><td>09 História de usuário</td><td>Reels: tutorial de [função] do app</td><td>Carrossel: 7 perguntas de entrevista e como responder</td><td>Respostas da caixa de perguntas</td></tr>
+      <tr><td>4 · Conversão</td><td>Carrossel: rotina de busca em 30 min por dia</td><td>Reels: mito × verdade sobre recolocação</td><td>Post: oferta ou convite para testar o recoloca.me</td><td>Contagem regressiva, depoimentos, link do app</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <span class="eyebrow">7 · Alcance</span>
+  <h2>Hashtags e crescimento</h2>
+  <p>Use de 3 a 5 hashtags por post, misturando uma ampla e outras específicas do tema.</p>
+  <div class="tags">
+    <span class="tag">#recolocação</span><span class="tag">#recolocaçãoprofissional</span><span class="tag">#transiçãodecarreira</span><span class="tag">#vagasdeemprego</span><span class="tag">#currículo</span><span class="tag">#linkedin</span><span class="tag">#entrevistadeemprego</span><span class="tag">#empregabilidade</span><span class="tag">#dicasdecarreira</span><span class="tag">#carreira</span><span class="tag">#rh</span><span class="tag">#novoemprego</span>
+  </div>
+  <ul class="plain">
+    <li><b>Palavra-chave nos comentários</b> (“comenta ENTREVISTA”): gera engajamento e conversa no direct. Dá para automatizar a resposta depois.</li>
+    <li><b>Collabs</b> com recrutadores, profissionais de RH e mentores de carreira: o post aparece para os seguidores dos dois perfis.</li>
+    <li><b>Responda todos os comentários</b> na primeira hora após publicar.</li>
+    <li><b>Reaproveite</b> cada carrossel como post no LinkedIn, onde esse público já está.</li>
+    <li><b>Meça</b> por post: salvamentos, compartilhamentos e cliques no link da bio (via UTM). Curtida é a métrica menos útil aqui.</li>
+  </ul>
+</section>
+
+<section>
+  <span class="eyebrow">8 · Identidade visual</span>
+  <h2>Padrão dos posts</h2>
+  <ul class="plain">
+    <li><b>Três fundos que se alternam no feed:</b> azul <code>#2F55E6</code>, amarelo <code>#FFC83D</code> e azul-noite <code>#111A2E</code>. Destaque a palavra-chave da frase com a cor de contraste.</li>
+    <li><b>Fontes</b> (gratuitas no Canva e no Google Fonts): Bricolage Grotesque nos títulos, Instrument Sans no texto.</li>
+    <li><b>Capa de carrossel:</b> no máximo 8 palavras e letra grande. Ela precisa ser lida na miniatura do feed.</li>
+    <li><b>Assinatura:</b> “recoloca.me” no rodapé do último slide de todo carrossel.</li>
+    <li>Se o site já tiver cores e logo próprios, use os do site no lugar destas.</li>
+  </ul>
+</section>
+
+</div>
+
+<script>
+document.querySelectorAll('.copy').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var el = document.getElementById(btn.dataset.copy);
+    var text = el.innerText.trim();
+    var label = btn.textContent;
+    function done(msg){ btn.textContent = msg; setTimeout(function(){ btn.textContent = label; }, 1600); }
+    function fallback(){
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      done('Texto selecionado');
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function(){ done('Copiado'); }, fallback);
+    } catch (e) { fallback(); }
+  });
+});
+</script>
